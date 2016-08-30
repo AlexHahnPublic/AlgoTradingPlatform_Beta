@@ -1,0 +1,13 @@
+A smart person isn't a master of information but rather is a master of
+information on where to obtain information.
+
+Although I have a bit of experience in front to back office automations and
+trading platforms, there is quite a big difference between project work at an
+investment bank and personal project work. From Jira's to Reference Data to
+file messaging/processing although there are some similarities (perhaps sec
+master and database/table set ups), there are quite a few differences, This
+file will list out all the resources I've used/found useful in building this
+system.
+
+Secondly I will include a requirements section in an attempt to make it
+possible to fork/pull and run any of this code.

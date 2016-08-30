@@ -1,9 +1,9 @@
 # AlgoTradingPlatform_Beta
 
 After working at an Investment bank in technology and automations for over two
-years I've decided that a major pre-grad school project that could demonstrate
-my merit and expertise would be to take what I've learned and build a full, 
-front to back, STP, trading platform.
+years I've decided that a substancial pre-grad school project that could
+demonstrate my merit and expertise would be to take what I've learned and build
+a full, front to back, STP, trading platform.
 
 This project will entail original ground up development using technologies 
 including: Python (Scripting, Pandas, NumPy, Scikit-learn, SciPy, etc), MySQL 
