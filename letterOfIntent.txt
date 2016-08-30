@@ -1,0 +1,43 @@
+Since graduating from Cornell with a degree in mathematical physics two 
+years ago I've been working at a global Investment Bank in Technology and
+Automations.
+
+The time has come where the learning curve/ fulfillment of working at an
+investment bank has begun to flatten out and aspirations towards new
+positions have taken their place.
+
+More specifically, originally a novice, I've learned much more about the landscape of the
+financial industry over the last two years and have ultimately decided that a
+move to the buy side, towards a much more quantitatively driven role, is much
+more suited towards my personality and overall career objectives. Grad school
+would be an important pivoting step in helping me achieve that goal.
+
+It's occurred to me that a substantial pre-grad school project that could
+potentially demonstrate my work ethic, merit, and desire to advance would be to
+build my own algorithmic trading platform.
+
+This is not the sole purpose of this project however; anything worth
+investing serious time into should purport an array of benefits. Each time I've
+completed an automation I've learned many valuable skills/knowledge sets 
+pertaining to finance and technology that have helped me grow and succeed. 
+Furthermore not only would a custom built algorithmic trading platform be a 
+testament to my seriousness to advance to grad schools but also would most 
+likely be a great project to tout to hedge funds and prop shops. After all the
+end goal of going to grad school would be to land a quality position at one of
+these firms.
+
+Lastly, as anyone who's ever worked on any modest software project before knows,
+there is no such thing as building something then completely being done with
+it. As my career in finance grows I intend to maintain, update, and implement
+new trading strategies I come across/research. In fact, in talks with friends
+from college/academia and industry, it's not uncommon to confer about one day
+starting a prop trading shop with the expertise each one of us bring to the
+table. From Finance Industry experience, two PhD's in computer science
+(Distributed Systems and PL), a PhD in Applied Mathematics, two traders at a
+top quant hedge fund based in Chicago, and several others with experience in the
+industry elsewhere, we have a committed group of people I'd consider extremely
+intelligent that could one day band together to do some real damage, I mean
+bring about efficiency, in the marketplace.
+
+For all these reasons and for how my situation has evolved in time, I believe it
+is a worthwhile idea to build and support this algorithmic trading platform.
