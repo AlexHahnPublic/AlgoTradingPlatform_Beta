@@ -11,3 +11,29 @@ system.
 
 Secondly I will include a requirements section in an attempt to make it
 possible to fork/pull and run any of this code.
+
+
+
+
+
+
+
+
+
+
+
+Requirements:
+Linux/Unix based systems will be able to leverage the aptitude commandline tool
+to install most of these requirements, I'm developing on a modified version of
+Ubuntu and will not post any assistance/requirements for building on windows.
+Python installations will leverage the python package manager pip (commandline
+tool pip)
+
+Python (2.7_) installations:
+
+pip install requests            - HTTP library for Python
+pip install beautifulsoup4      - For quick turn around scraping
+
+
+
+
