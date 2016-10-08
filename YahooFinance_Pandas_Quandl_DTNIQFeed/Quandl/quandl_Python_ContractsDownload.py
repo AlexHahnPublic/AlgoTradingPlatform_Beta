@@ -7,7 +7,11 @@
 
 # Purpose
 #----------------------------------------------------------
-#
+# Using Quandl, Python and its requests package connect to Quandl's API and
+# data sets to pull contracts on futures for a specific time frame. Note
+# currently this script takes the ticker as the argument. Later we can adjust it
+# to take more inputs and be more user friendly i.e. prompt for contract name,
+# periods, delivery dates, etc.
 
 from __future__ import print_function
 
