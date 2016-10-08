@@ -49,4 +49,8 @@ from
   update the script. Hopefully the Quandl package is more robust and takes care
   of this. The package will probably also contain additional useful
   functionality to explore and potentially leverage.
+- perpetualSeries_ContinousFuturesContractModel.py needs to accept a list of
+  inputs. Also it should there should be a short helper function to help derive
+  the current near contract and far contract as opposed to changing the
+  hardcoded values each expiration date
 
