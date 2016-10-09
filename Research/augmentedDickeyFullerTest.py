@@ -16,11 +16,12 @@ import statsmodels.tsa.stattools as ts
 import pandas.io.data as web
 
 # Perform statsmodels ADF test on an input ticker from yahoo data
+# TODO: dates should be prompted commandline inputs
 if __name__ == "__main__":
     import sys
     ticker = str(sys.argv[1])
-    amazon = web.DataReader(ticker, "yahoo", datetime(2000,1,1), datetime(2015,1,1))
-    dat = ts.adfuller(amazon['Adj Close'], 1)
+    series = web.DataReader(ticker, "yahoo", datetime(2000,1,1), datetime(2015,1,1))
+    dat = ts.adfuller(series['Adj Close'], 1)
     print(dat)
 
 
