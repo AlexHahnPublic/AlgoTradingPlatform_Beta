@@ -2,6 +2,7 @@ This file will track items that either are necessary to complete in the
 future and/or options that should be explored and possibly implemented
 
 
+
 ToDo:
 -----------------------------------------------------------
 
@@ -53,4 +54,6 @@ from
   inputs. Also it should there should be a short helper function to help derive
   the current near contract and far contract as opposed to changing the
   hardcoded values each expiration date
-
+  - make plot_2Price_Series take dates as inputs in cADF.py
+  - make the plot functions in cADF.py all subplots on the same window for
+    brevity
