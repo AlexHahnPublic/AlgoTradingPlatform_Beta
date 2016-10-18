@@ -26,7 +26,6 @@ import pandas as pd
 import pandas.io.data as web
 import pprint
 import statsmodels.tsa.stattools as ts
-import statsmodels.api as sm
 
 from pandas.stats.api import ols
 
@@ -54,7 +53,7 @@ def plot_2Price_Series(df, ts1, ts2):
 # TODO: take start and end dates as inputs
 def plot_Scatter_Series(df, ts1, ts2):
     """
-    plots the scatter plot of ts1 vs ts2 time series
+    Plots the scatter plot of ts1 vs ts2 time series
     """
     plt.xlabel('%s Price ($)' % ts1)
     plt.ylabel('%s Price ($)' % ts2)
@@ -64,13 +63,13 @@ def plot_Scatter_Series(df, ts1, ts2):
 
 # TODO: take start and end dates as inputs
 def plot_Residuals(df):
-    months = mdates.MonthLocator()
+    months = mdates.MonthLocator()  # every month
     fig, ax = plt.subplots()
     ax.plot(df.index, df["res"], label="Residuals")
     ax.xaxis.set_major_locator(months)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
     ax.set_xlim(dt.datetime(2012, 1, 1), dt.datetime(2013, 1, 1))
-    ax. grid(True)
+    ax.grid(True)
     fig.autofmt_xdate()
 
     plt.xlabel('Month/Year')
@@ -79,11 +78,11 @@ def plot_Residuals(df):
     plt.legend()
 
     plt.plot(df["res"])
-    plt.show
+    plt.show()
+
 
 # TODO: make prompts for both ticker names, and date ranges
 if __name__ == "__main__":
-    #import sys
     start = dt.datetime(2012, 1, 1)
     end = dt.datetime(2013, 1, 1)
 
@@ -119,11 +118,12 @@ if __name__ == "__main__":
     # Calculate the optimal hedge ratio (basically the slope of the OLS line
     # of best fit of the scatterplot)
     #res = sm.OLS(y=df[stock2], x=df[stock1])
-    res = sm.OLS(df[stock2], df[stock1])
-    beta_hedge = res.beta.x
+    #res = sm.OLS(df[stock2], df[stock1])
+    ols_res = ols(y=df[stock2], x=df[stock1])
+    beta_hedge = ols_res.beta.x
 
     # Calculate the residuals of the OLS vs the scatterplot data points
-    df["res"] = df[stock2]-beta_hedge*df[stock1]
+    df["res"] = df[stock2] - beta_hedge*df[stock1]
 
     # Plot the residuals
     plot_Residuals(df)
@@ -131,6 +131,3 @@ if __name__ == "__main__":
     # Calculate and output the CADF test on the residuals
     cadf = ts.adfuller(df["res"])
     pprint.pprint(cadf)
-
-
-
