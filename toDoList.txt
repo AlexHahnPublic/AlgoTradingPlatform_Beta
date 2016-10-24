@@ -5,7 +5,7 @@ future and/or options that should be explored and possibly implemented
 
 ToDo:
 -----------------------------------------------------------
-
+- Implement basic Kelly Criterion script
 
 
 
