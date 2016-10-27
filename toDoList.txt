@@ -1,11 +1,16 @@
-This file will track items that either are necessary to complete in the
-future and/or options that should be explored and possibly implemented
-
+This file will track items that either are necessary to complete in the future
+ and/or options that should be explored and possibly implemented 
 
 
 ToDo:
 -----------------------------------------------------------
 - Implement basic Kelly Criterion script
+- Refactor the data handler class away from the HistoricCSVHandler subclass and
+  towards a SecuritiesMasterDataHandler subclass
+- Similarly a few other subclasses that will in the future help handle more
+  robust algothimic/automated trading would be to implement: QuandlDataHandler,
+  and InteractiveBrokersMarketFeedDataHandler subclasses
+
 
 
 
@@ -57,3 +62,5 @@ from
   - make plot_2Price_Series take dates as inputs in cADF.py
   - make the plot functions in cADF.py all subplots on the same window for
     brevity
+- add indicator and filter subclasses for a class hierarchy in the strategy.py
+  file
