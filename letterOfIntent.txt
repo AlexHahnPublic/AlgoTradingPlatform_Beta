@@ -12,7 +12,7 @@ move to the buy side, towards a much more quantitatively driven role, is much
 more suited towards my personality and overall career objectives. Grad school
 would be an important pivoting step in helping me achieve that goal.
 
-It's occurred to me that a substantial pre-grad school project that could
+It's occurred to me that a substantial school project that could
 potentially demonstrate my work ethic, merit, and desire to advance would be to
 build my own algorithmic trading platform.
 
