@@ -14,7 +14,7 @@
 # identical interface to a market feed for both historic and live running
 # data. This motivates the concept of a class heirarchy based on a
 # DataHandler object which gives all subclasses an interface to for providing
-# market data to the remaining components within the stack. 
+# market data to the remaining components within the stack.
 
 from __future__ import print_function
 
@@ -41,7 +41,7 @@ class DataHandler(object):
 
     __metaclass__ = ABCMeta # We cannot instantiae an abstract class! only
                             # subclasses however this enables us to ensure that
-                            # all Data Handling adheres to compatibility 
+                            # all Data Handling adheres to compatibility
 
     @abstractmethod
     def get_latest_bar(self, symbol):
@@ -118,7 +118,7 @@ class HistoricCSVDateaHandler(DataHandler):
         events - The Event Queue
         csv_dir - Absolute directory path to the CSV files
         symbol_list - A list of symbol strings
-    
+
     """
 
     self.events = events
@@ -159,7 +159,7 @@ class HistoricCSVDateaHandler(DataHandler):
                 comb_index = self.symbol_data[s].index
             else:
                 comb_index.union(self.symbol_data[s].index)
-            
+
             # Set the latest symbol_data to None
             self.latest_symbol_data[s] = []
 
@@ -213,7 +213,7 @@ class HistoricCSVDateaHandler(DataHandler):
             raise
         else:
             return bars_list[-1][0]
-    
+
     def get_latest_bar_value(self, symbol, val_type):
         """
         Returns one of the Open, High, Low, Close, Volume, or OI values from
