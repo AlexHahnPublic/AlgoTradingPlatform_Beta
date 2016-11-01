@@ -1,5 +1,5 @@
 This file will track items that either are necessary to complete in the future
- and/or options that should be explored and possibly implemented 
+ and/or options that should be explored and possibly implemented
 
 
 ToDo:
@@ -10,6 +10,10 @@ ToDo:
 - Similarly a few other subclasses that will in the future help handle more
   robust algothimic/automated trading would be to implement: QuandlDataHandler,
   and InteractiveBrokersMarketFeedDataHandler subclasses
+- Integrate risk/performance management more tightly with the portfolio class
+  and testing framework. Currently generate_naive_order in portfolio.py uses an
+  arbitrary fill quantity of 100, position sizing can easily be integrated in
+  here along with an entire suite of risk/performance tools.
 
 
 
@@ -18,12 +22,12 @@ ToDo:
 ToExplore:
 -----------------------------------------------------------
 - Check out Python's ScraPy library built on the Twisted framework for
-  making the price retrieval in the Database assembly folder more 
-  concurrent (right now it's sequentially by symbol) and therefore a great 
+  making the price retrieval in the Database assembly folder more
+  concurrent (right now it's sequentially by symbol) and therefore a great
   deal
   faster)
 
-- ScraPy helps scrape the web, some strategies rely on inferring sentiment 
+- ScraPy helps scrape the web, some strategies rely on inferring sentiment
 from
   online web/text resources. Check out these two books for further insight:
      [14] M. A. Russell. 21 Recipes for Mining Twitter. O’Reilly Media, 2011
@@ -32,7 +36,7 @@ from
 - Look into a NoSQL db framework like MongoDB for storing unstructured/ text
   information
 
-- Look into storage of tick data (much higher volume of data) per exchange. 
+- Look into storage of tick data (much higher volume of data) per exchange.
   HDF5, kdb, or flat files?
 
 - Similarly the historical representation / even market simulator of a limit
@@ -50,7 +54,7 @@ from
 - Look into the Quandl python package. Although the
   YahooFinance_Pandas_Quandl_DTNIQFeed/Quandl/quanfl_Python_ContractsDownload.py
   file works decently well, it is most likely more "correct" and scalable to
-  use the Quandl package. For example whenever the version is updated through 
+  use the Quandl package. For example whenever the version is updated through
   the  web the API links may break, ie from going to v1 -> v2 -> v3 I've had to
   update the script. Hopefully the Quandl package is more robust and takes care
   of this. The package will probably also contain additional useful
@@ -64,3 +68,6 @@ from
     brevity
 - add indicator and filter subclasses for a class hierarchy in the strategy.py
   file
+
+- in portfolio.py implement margin calculation and tracking as well as shorting
+  requirements logic
