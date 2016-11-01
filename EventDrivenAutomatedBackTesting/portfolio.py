@@ -7,21 +7,313 @@
 
 # Purpose
 #----------------------------------------------------------
-# The portfolio object will be in charge of tracking all open positions as well
-# as generates orders of a fixed quantity of stock based on signals. In
+# The portfolio object will be charged with tracking all open positions as well
+# as generating orders of a fixed quantity of stock based on signals. In
 # theory, at any given point in time we should be able to glean a first order
 # approximation of how much our investments would be worth if the entire
 # portfolio was instantaneously liquidated (disregarding fees and transaction
-# costs). Lastly Portfolio objects can be build to include risk managemant and
+# costs). Lastly Portfolio objects can be build to include risk management and
 # performance analysis tools.
 #
 
 from __future__ import print_function
 
+import datetime as dt
+from math import floor
+
+# For python 2 vs 3 compatibility insurance
+try:
+    import Queue as queue
+except ImportError:
+    import queue
+
 import numpy as np
 import pandas as pd
 
-def create_sharpe_ratio(returns, periods=252):
+from event import FillEvent, OrderEvent
+from performance import create_sharpe_ratio, create_drawdowns
+
+class Portfolio(object):
     """
-    Create the Sharpe ratio for the
+    The Portfolio class handles the positions and market value of all
+    instruments at a resolution of a "bar", i.e. secondly, minutely, 5-min,
+    30-min, 60-min, or EOD.
+
+    The positions DataFrame stores a time-index of the quantity of positions
+    held.
+
+    The holdings DataFrame stores the cash and total market holdings value of
+    each symbol for a particular time-index, as well as the percentage change
+    in portfolio total across bars.
+    """
+
+    def __init__(self, bars, events, start_date, initial_capital=100000.0):
+        """
+        Initializes the portfolio with bars and an event queue. Also includes a
+        starting datetime index and initial capital (USD unless otherwise
+        stated).
+
+        Parameters:
+            bars - The DataHandler object with current market data.
+            events - the Event Queue object.
+            start_date - The start date (bar) of the portfolio.
+            initial_capital - The starting capital in USD.
+        """
+
+        self.bars = bars
+        self.events = events
+        self.symbol_list = self.bars.symbol_list
+        self.start_date = start_date
+        self.initial_capital = initial_capital
+
+        self.all_positions = self.construct_all_positions()
+        self.current_positions = dict( (k,v) for k, v in \
+            [(s, 0) for s in self.symbol_list] )
+
+        self.all_holdings = self.construct_all_positions()
+        self.current_holdings = self.construct_current_holdings()
+
+    def construct_all_positions(Self):
+        """
+        Constructs the positions list using the start_Date to determine
+        when the time index will begin.
+        """
+
+        # Use a dictionary comprehension to generate the time - price
+        # key-value pairs dictionary
+        d = dict( (k,v) for k, v in [(s, 0) for s in self.symbol_list] )
+        d['datetime'] = self.start_date
+        return [d]
+
+    def construct_all_holdings(self):
+        """
+        Constructs the holdings list using the start_date to determine when
+        the time index will begin.
+        Purports the notion of an 'account' for each symbol, as well as the
+        cash on hand, the commission paid, and the total portfolio value.
+        Note that upon first implementation there will be no margin
+        requirements or shorting constraints.
+        """
+
+        d = dict( (k,v) for k, v in [(s, 0.0) for s in self.symbol_list])
+        d['datetime'] = self.start_date
+        d['cash'] = self.initial_capital
+        d['commission'] = 0.0
+        d['total'] = self.initial_capital
+        return [d]
+
+    def construct_current_holdings(self):
+        """
+        Constructs the dictionary which will hold the instantaneous value of
+        the portfolio across all symbols.
+
+        Note that the function is almost identical to the
+        'construct_all_holdings', the only difference being that it does not
+        wrap the dictionary in a list at the return. This is because we will
+        only want one accumulated value/entry
+        """
+
+        d = dict( (k,v) for k, v in [(s, 0.0) for s in self.symbol_list] )
+        d['cash'] = self.initial_capital
+        d['commission'] = 0.0
+        d['total'] = self.initial_capital
+        return d
+
+    def update_timeindex(self, event):
+        """
+        Adds a new record to the positions matrix for the current market data
+        bar. This reflects the PREVIOUS bar, i.e. all current market data at
+        this stage is known (OHLCV).
+
+        Because we will be backtesting on this data we will not go through a
+        strenuous effort to obtain inter-day bid ask spread pricing. Although
+        it would make our backtesting more accurate it would demand
+        considerable work, requiring much more robust data maintenance/storage,
+        and potentially additional cost in obtaining the data. Instead we will
+        use OHLCV EOD data. Any intra day strategies this should work
+        relatively accurately on, however for intra day strategies (hourly,
+        minutely, or less) this could potentially introduce a considerable
+        amount of error and would not be advisable to backtest with.
+
+        Leverages individual MarketEvent from the events queue.
+        """
+
+        # Update positions:
+        # =================================================
+        dp = dict( (k,v) for k, v in [(s, 0) for s in self.symbol_list])
+        dp['datetime'] = latest_datetime
+
+        for s in self.symbol_list:
+            dp[s] = self.current_positions
+
+        # Append the current positions
+         self.all_positions.append(dp)
+
+        # Update holdings
+        # =================================================
+        dh = dict( (k,v) for k, v in [(s, 0) for s in self.symbol_list] )
+        dh['datetime'] = latest_datetime
+        dh['cash'] = self.current_holdings['cash']
+        dh['commission'] = self.current_holdings['commission']
+        dh['total'] = self.current_holdings['cash']
+
+        for s in self.symbol_list:
+            # Approximation to the real value
+            market_value = self.current_positions[s] * \
+                self.bars.get_latest_bar_value(s, "adj_close")
+            dh[s] = market_value
+            dh['total'] += market_value
+
+        # Append the current holdings
+        self.all_holdings.append(dh)
+
+    def update_positions_from_fill(self, fill):
+        """
+        Takes a Fill object and updates the position matrix to reflect the new
+        position.
+
+        Parameters:
+            fill - The Fill object to update the position with.
+        """
+
+        # Check whether the fill is a buy or sell
+        fill_dir = 0
+        if fill.direction == 'BUY':
+            fill_dir = 1
+        if fill.direction == 'SELL':
+            fill_dir = -1
+
+        # Update the positions list with the new quantities (add or subtract)
+        self.current_positions[fill.symbol] += fill_dir*fill.quantity
+
+    def update_holdings_from_fill(self, fill):
+        """
+        Takes a Fill object and updates the holdings matrix to reflect the
+        holdings value.
+
+        Note that method does not use the cost associated with the FillEvent.
+        This is because it is not necessarily indicative of what the historical
+        cost would have been to fill (market impact and depth book could change
+        the cost to an extent). As a result we will use the "current market
+        price" as the fill cost (closing price of the latest bar). This
+        approximation should work decently well with most lower frequency
+        strategies in relatively liquid markets. Once again this would not be a
+        reasonable approximation for high frequency simulation and backtesting.
+
+        Parameters:
+            fill - The Fill object to update the holdings with.
+        """
+
+        # Check whether the fill is a buy or sell
+        fill_dir = 0
+        if fill.direction == 'BUY':
+            fill_dir = 1
+        if fill.direction == 'SELL':
+            fill_dir = -1
+
+        # Update the holdings list with new quantities
+        fill_cost = self.bars.get_latest_bar_value(fill.symbol, "adj_close")
+        cost = fill_dir * fill_cost * fill.quantity
+        self.current_holdings[fill.symbol] += cost
+        self.current_holdingsp['commissions'] += fill.commission
+        self.current_holdings['cash'] -= (cost + fill.commission)
+        self.current_holdings['total'] -= (cost + fill.commission)
+
+    def update_fill(self, event):
+        """
+        Updates the portfolio current positions and holdings from a FillEvent
+
+        Note that the pure virtual update_fill method from the Portfolio class
+        is implemented here and simply leverages the two preceding methods upon
+        receipt of a fill event
+        """
+
+        if event.type == 'FILL':
+            self.update_positions_from_fill(event)
+            self.update_holdings_from_fill(event)
+
+    def generate_naive_order(self, signal):
+        """
+        While the Portfolio object must handle FillEvents, it must also take
+        care of generating OrderEvents upon the receipt of one or more
+        SignalEvents.
+
+        For the sake of a quick build and fully functioning back testing (at
+        the sake of realistic position sizing and risk/performance management)
+        the method will take in a signal to go long or short an asset and will
+        do so for exactly 100 shares of the asset (an arbitrary hard coded
+        amount). It will be a ToDo to add a more robust position sizing and
+        risk system integration. For now the method will simply handle the
+        longing, shorting, and exiting of a position based on the current
+        quantity and symbol, generating OrderEvents
+
+        TLDR:
+            Simply files an Order object as a constant quantity sizing of the
+            signal object, without risk management or position sizing
+            considerations.
+
+        Parameters:
+            signal - The tuple containing Signal information
+        """
+
+        order = None
+
+        symbol = signal.symbol
+        direction = signal.signal_type
+        strength = signal.strength
+
+        mkt_quantity = 100 # Arbitrary
+
+        cur_quantity = self.current_positions[symbol]
+        order_type = 'MKT'
+
+        if direction == 'LONG' and cur_quantity == 0:
+            order = OrderEvent(symbol, order_type, mkt_quantity, 'BUY')
+        if direction == 'SHORT' and cur_quantity == 0:
+            order = OrderEvent(symbol, order_type, mkt_quantity, 'SELL')
+
+        if direction == 'EXIT' and cur_quantity > 0:
+            order = OrderEvent(symbol, order_type, abs(cur_quantity), 'SELL')
+        if direction == 'EXIT' and cur_quantity < 0:
+            order = OrderEvent(symbol, order_type, abs(cur_quantity), 'BUY')
+
+        return order
+
+    def update_signal(self, event):
+        """
+        Acts on a SignalEvent to generate new orders based on the portfolio
+        logic
+        """
+
+        if event.type == 'SIGNAL':
+            order_event = self.generate_naive_order(event)
+            self.events.put(order_event)
+
+    def create_equity_curve_dataframe(self):
+        """
+        The equity curve is the most important outcome of the portfolio. In
+        essence it is a returns stream that we will normalize to a percentage
+        basis with the initial account size as 1.0 (rather than absolute dollar
+        amount.
+
+        Creates a pandas DataFrame from the all_holdings list of dictionaries.
+        """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
