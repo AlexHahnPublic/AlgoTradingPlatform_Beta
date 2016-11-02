@@ -7,7 +7,8 @@
 
 # Purpose
 #----------------------------------------------------------
-#
+# This file will implement several metrics that will be used to summarize and
+# analyze Portfolio objects
 
 from __future__ import print_function
 

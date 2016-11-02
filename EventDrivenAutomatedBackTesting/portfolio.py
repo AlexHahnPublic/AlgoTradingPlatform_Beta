@@ -294,26 +294,43 @@ class Portfolio(object):
         The equity curve is the most important outcome of the portfolio. In
         essence it is a returns stream that we will normalize to a percentage
         basis with the initial account size as 1.0 (rather than absolute dollar
-        amount.
+        amount).
 
         Creates a pandas DataFrame from the all_holdings list of dictionaries.
         """
 
+        curve = pd.DataFrame(self.all_holdings)
+        curve.set_index('datetime', inplace=True)
+        curve['returns'] = curve['total'].pct_change()
+        curve['equity_curve'] = (1.0+curve['returns']).cumprod()
+        self.equity_curve = curve
 
+    def output_summary_stats(self):
+        """
+        Creates a list of summary statistics for the portfolio
 
+        Outputs:
+            equity.csv
 
+        Can be loaded into a Matplotlib script, or spreadsheet software for
+        analysis
+        """
 
+        total_return = self.equity_curve['equity_curve'][-1]
+        returns = self.equity_curve['returns']
+        pnl = self.equity_curve['equity_curve']
 
+        sharpe_ratio = create_sharpe_ratio(returns, period=252*60*6.5)
+        drawdown, max_dd, dd_duration = create_drawdowns(pnl)
+        self.equity_curve['drawdown'] = drawdown
 
+        stats = [("Total Return", "%0.2f%%" % \
+                ((total_return - 1.0) * 100.0)),
+                ("Sharpe Ratio", "%0.2f" % sharpe_ratio),
+                ("Max Drawdown", "%0.2f%%" % (max_dd * 100.0)),
+                ("Drawdown Duration", "%d" % dd_duration)]
 
+        self.equity_curve.to_csv('equity.csv')
 
-
-
-
-
-
-
-
-
-
+        return stats
 
