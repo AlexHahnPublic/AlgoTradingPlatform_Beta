@@ -164,6 +164,7 @@ class Backtest(object):
         """
         Runs the backtest then output performance methods sequentially
         """
-        
+
         self._run_backtest()
         self.output_performance()
+
