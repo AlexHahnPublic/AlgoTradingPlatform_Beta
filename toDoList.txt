@@ -68,6 +68,8 @@ from
     brevity
 - add indicator and filter subclasses for a class hierarchy in the strategy.py
   file
-
 - in portfolio.py implement margin calculation and tracking as well as shorting
   requirements logic
+- Include more error handling logic in ib_execution.py
+- update create_initial_order_id in ib_execution to query IB for the latest
+  next available ID and use that for tracking submitted orders
