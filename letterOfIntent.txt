@@ -9,10 +9,9 @@ positions have taken their place.
 More specifically, originally a novice, I've learned much more about the landscape of the
 financial industry over the last two years and have ultimately decided that a
 move to the buy side, towards a much more quantitatively driven role, is much
-more suited towards my personality and overall career objectives. Grad school
-would be an important pivoting step in helping me achieve that goal.
+more suited towards my personality and overall career objectives.
 
-It's occurred to me that a substantial school project that could
+It's occurred to me that a substantial project that could
 potentially demonstrate my work ethic, merit, and desire to advance would be to
 build my own algorithmic trading platform.
 
