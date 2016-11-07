@@ -14,6 +14,7 @@ ToDo:
   and testing framework. Currently generate_naive_order in portfolio.py uses an
   arbitrary fill quantity of 100, position sizing can easily be integrated in
   here along with an entire suite of risk/performance tools.
+- change csv_dir in mac.py when logging into Ubuntu next
 
 
 
@@ -73,3 +74,6 @@ from
 - Include more error handling logic in ib_execution.py
 - update create_initial_order_id in ib_execution to query IB for the latest
   next available ID and use that for tracking submitted orders
+- Implement Cointegrated Dickey-Fuller for the mean reverting strategy
+- Similarly parametrize and run through combination testing for optimization of
+  constraints in intraday_mr.py
