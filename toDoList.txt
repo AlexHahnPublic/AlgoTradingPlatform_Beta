@@ -77,3 +77,7 @@ from
 - Implement Cointegrated Dickey-Fuller for the mean reverting strategy
 - Similarly parametrize and run through combination testing for optimization of
   constraints in intraday_mr.py
+- Change the hedging ratio in the intraday_MeanReverting strategy to leverage
+  CADF
+- make the main method take in the two ticker names (Dates?) in
+  intraday_MeanReverting.py
