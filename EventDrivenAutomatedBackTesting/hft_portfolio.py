@@ -2,19 +2,14 @@
 # -*- coding: utf-8 -*-
 
 #==========================================================
-#===================== portfolio.py =======================
+#=================== hft_portfolio.py =====================
 #==========================================================
 
 # Purpose
 #----------------------------------------------------------
-# The portfolio object will be charged with tracking all open positions as well
-# as generating orders of a fixed quantity of stock based on signals. In
-# theory, at any given point in time we should be able to glean a first order
-# approximation of how much our investments would be worth if the entire
-# portfolio was instantaneously liquidated (disregarding fees and transaction
-# costs). Lastly Portfolio objects can be build to include risk management and
-# performance analysis tools.
-#
+# Similarly to dataHandler.py and hft_dataHandler.py, portfolio.py and its
+# object structure will need to be slightly adjusted to handle intraday
+# positions and conform with DTN IQFeed and Interactive Broker specifications
 
 from __future__ import print_function
 
@@ -33,18 +28,21 @@ import pandas as pd
 from event import FillEvent, OrderEvent
 from performance import create_sharpe_ratio, create_drawdowns
 
-class Portfolio(object):
+class PortfolioHFT(object):
     """
-    The Portfolio class handles the positions and market value of all
-    instruments at a resolution of a "bar", i.e. secondly, minutely, 5-min,
-    30-min, 60-min, or EOD.
+    Very similar to the portfolio.py object by handles positions and market
+    values at a one minute resolution for bars.
+
+    The Sharpe Ratio calculation will need to be modified and a correct call
+    to the hft_dataHandler object for the close price data with the DTN
+    IQFeed bars will need to be made.
 
     The positions DataFrame stores a time-index of the quantity of positions
     held.
 
-    The holdings DataFrame stores the cash and total market holdings value of
+    The holdings DataFrame stores the cash and total matket holdings value of
     each symbol for a particular time-index, as well as the percentage change
-    in portfolio total across bars.
+    in portfolio total across bars
     """
 
     def __init__(self, bars, events, start_date, initial_capital=100000.0):
@@ -124,18 +122,6 @@ class Portfolio(object):
         Adds a new record to the positions matrix for the current market data
         bar. This reflects the PREVIOUS bar, i.e. all current market data at
         this stage is known (OHLCV).
-
-        Because we will be backtesting on this data we will not go through a
-        strenuous effort to obtain inter-day bid ask spread pricing. Although
-        it would make our backtesting more accurate it would demand
-        considerable work, requiring much more robust data maintenance/storage,
-        and potentially additional cost in obtaining the data. Instead we will
-        use OHLCV EOD data. Any intra day strategies this should work
-        relatively accurately on, however for intra day strategies (hourly,
-        minutely, or less) this could potentially introduce a considerable
-        amount of error and would not be advisable to backtest with.
-
-        Leverages individual MarketEvent from the events queue.
         """
 
         latest_datetime =
@@ -163,7 +149,7 @@ class Portfolio(object):
         for s in self.symbol_list:
             # Approximation to the real value
             market_value = self.current_positions[s] * \
-                self.bars.get_latest_bar_value(s, "adj_close")
+                self.bars.get_latest_bar_value(s, "close")
             dh[s] = market_value
             dh['total'] += market_value
 
@@ -200,8 +186,7 @@ class Portfolio(object):
         the cost to an extent). As a result we will use the "current market
         price" as the fill cost (closing price of the latest bar). This
         approximation should work decently well with most lower frequency
-        strategies in relatively liquid markets. Once again this would not be a
-        reasonable approximation for high frequency simulation and backtesting.
+        strategies in relatively liquid markets.
 
         Parameters:
             fill - The Fill object to update the holdings with.
@@ -215,7 +200,7 @@ class Portfolio(object):
             fill_dir = -1
 
         # Update the holdings list with new quantities
-        fill_cost = self.bars.get_latest_bar_value(fill.symbol, "adj_close")
+        fill_cost = self.bars.get_latest_bar_value(fill.symbol, "close")
         cost = fill_dir * fill_cost * fill.quantity
         self.current_holdings[fill.symbol] += cost
         self.current_holdingsp['commissions'] += fill.commission
@@ -323,7 +308,7 @@ class Portfolio(object):
         returns = self.equity_curve['returns']
         pnl = self.equity_curve['equity_curve']
 
-        sharpe_ratio = create_sharpe_ratio(returns)
+        sharpe_ratio = create_sharpe_ratio(returns, period=252*60*6.5)
         drawdown, max_dd, dd_duration = create_drawdowns(pnl)
         self.equity_curve['drawdown'] = drawdown
 
