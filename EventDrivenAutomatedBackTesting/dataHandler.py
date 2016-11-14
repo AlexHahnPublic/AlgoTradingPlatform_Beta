@@ -164,6 +164,7 @@ class HistoricCSVDateaHandler(DataHandler):
             self.latest_symbol_data[s] = []
 
         # Reindex the dataframes
+        # NOTE: can be updated with "prod" data.py
         for s in self.symbol_list:
             self.symbol_data[s] = self.symbol_data[s].\
                 reindex(index=comb_index, method='pad').iterrows()
