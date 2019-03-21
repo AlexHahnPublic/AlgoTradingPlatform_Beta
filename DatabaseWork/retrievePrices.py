@@ -20,7 +20,7 @@ import requests
 # Connect to our MySQL database instance
 db_host = 'localhost'
 db_user = 'sec_user'
-db_pass = '25Ford40'
+db_pass = '##****##'
 db_name = 'securities_master'
 con = MySQLdb.connect(db_host, db_user, db_pass, db_name)
 
