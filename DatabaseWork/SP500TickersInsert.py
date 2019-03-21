@@ -67,7 +67,7 @@ def insert_SP500_syms(symbols):
     # Connect to our instance of the db
     db_host = 'localhost'
     db_user = 'sec_user'
-    db_pass = '25Ford40'
+    db_pass = '##****##'
     db_name = 'securities_master'
     con = MySQLdb.connect(
             host=db_host, user=db_user, passwd=db_pass, db=db_name
